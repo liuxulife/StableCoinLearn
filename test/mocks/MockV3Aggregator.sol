@@ -17,6 +17,11 @@ contract MockV3Aggregator {
     uint256 public latestTimestamp;
     uint256 public latestRound;
 
+    /**
+     * getAnswer：记录每一轮的价格数据，getAnswer[round] 获取指定轮次的价格。
+     * getTimestamp：记录每一轮的价格更新时间戳。
+     * getStartedAt：记录每一轮开始的时间戳，
+     */
     mapping(uint256 => int256) public getAnswer;
     mapping(uint256 => uint256) public getTimestamp;
     mapping(uint256 => uint256) private getStartedAt;
