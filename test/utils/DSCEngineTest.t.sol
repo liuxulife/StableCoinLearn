@@ -38,6 +38,7 @@ contract DSCEngineTest is Test {
     uint256 public constant PRECISION = 1e18;
     uint256 public constant LIQUIDATION_THRESHOLD = 50;
     uint256 public constant LIQUIDATION_PRECISION = 100;
+    uint256 public constant MIN_HEALTH_FACTOR = 1e18;
 
     /////////////////////
     // Events       //
@@ -249,9 +250,9 @@ contract DSCEngineTest is Test {
      *
      * 1. If I only deposit collateral, I don't mint any DSC
      * 2. I can't redeem collateral, it will make a panic because healthfactor division or modulo by zero
-     *
+     * 3. I modify the calculateHealthFactor function, if the dsc minted is zero, it will return type(uint256).max
      */
-    function testCanEmitRedeemEvent() public depositedCollateralAndMintDSC {
+    function testCanEmitRedeemEvent() public /*depositedCollateralAndMintDSC*/ depositedCollateral {
         vm.expectEmit(true, true, true, true, address(dscEngine));
         emit CollateralRedeemed(USER, USER, weth, AMOUNT_REDEEM);
         vm.startPrank(USER);
@@ -445,7 +446,7 @@ contract DSCEngineTest is Test {
     }
 
     function testGetMinimumHealthFactor() public view {
-        uint256 expectedMinimumHealthFactor = 1e18;
+        uint256 expectedMinimumHealthFactor = MIN_HEALTH_FACTOR;
         uint256 actualMinimumHealthFactor = dscEngine.getMinimumHealthFactor();
         assertEq(expectedMinimumHealthFactor, actualMinimumHealthFactor);
     }

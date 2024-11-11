@@ -263,6 +263,14 @@ contract DSCEngine is ReentrancyGuard {
 
     // 1. Check the health factor (do they have enough collateral)
     // 2. Revert if they don't
+    /**
+     *
+     * @param user The address of the user to check the health factor
+     * @notice If the user's health factor is below the minimum health factor, then revert
+     * @notice The minimum health factor is 1
+     * @notice the calculated health factor precision is 1e18
+     * and why can compare 1e18 with 1？
+     */
     function _revertIfHealthFactorBroken(address user) internal view {
         uint256 userHealthFactor = _healthFactor(user);
         if (userHealthFactor < MIN_HEALTH_FACTOR) {
@@ -289,12 +297,23 @@ contract DSCEngine is ReentrancyGuard {
         return healthFactor;
     }
 
+    /**
+     *
+     * @param collateralValueOfUsd  The total value of the user's collateral in USD (1e18)
+     * @param amountDSC  The total amount of DSC minted by the user
+     * @return healthFactor The health factor of the user (1e18)
+     */
     function _calculateHealthFactor(uint256 collateralValueOfUsd, uint256 amountDSC) private pure returns (uint256) {
         /**
          * collateralAdjustedForThreshold means the value of the collateral after the liquidation threshold is applied
          * now the threshold is 50% is the LIQUIDATION_THRESHOLD / LIQUIDATION_PRECISION
          * 100 $ETH -> 50 $ ==> 100$ETH * 50 / 100 = 50$
          */
+        if (amountDSC == 0) {
+            return type(uint256).max;
+        }
+
+        // 50/100 we need know the collateralValueOfUsd's precision
         uint256 collateralAdjustedForThreshold = (collateralValueOfUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
 
         // 150$ ETH / 100$  = 1.5
@@ -304,6 +323,12 @@ contract DSCEngine is ReentrancyGuard {
         return healthFactor;
     }
 
+    /**
+     *
+     * @param user The address of the user to get the account information
+     * @return totalDscMinted  The total amount of DSC minted by the user
+     * @return collateralValueOfUsd  The total value of the user's collateral in USD (1e18)
+     */
     function _getAccountInfomation(address user)
         private
         view
@@ -368,7 +393,7 @@ contract DSCEngine is ReentrancyGuard {
     /**
      *
      * @param user The address of the user to get the collateral value of
-     * @return totalCollateralValueOfUsd The total value of the user's collateral in USD
+     * @return totalCollateralValueOfUsd The total value of the user's collateral in USD (1e18)
      * @notice The Result Precision is 1e18
      */
     function getAccountCollateralValueOfUsd(address user) public view returns (uint256 totalCollateralValueOfUsd) {
@@ -387,7 +412,7 @@ contract DSCEngine is ReentrancyGuard {
     /**
      * @param token The address of the token to get the value of
      * @param amount The amount of the token to get the value of
-     * @return The value of the token in USDInWei
+     * @return The value of the token in USDInWei（1e18)
      * @notice The Result Precision is 1e18
      */
     function getEachCollateralUsdValue(address token, uint256 amount) public view returns (uint256) {
@@ -425,5 +450,13 @@ contract DSCEngine is ReentrancyGuard {
 
     function getLiquidationBonus() public pure returns (uint256) {
         return LIQUIDATION_BONUS;
+    }
+
+    function getCollateralAddresses() public view returns (address[] memory) {
+        return s_collateralTokens;
+    }
+
+    function getCollateralPriceFeed(address token) public view returns (address) {
+        return s_priceFeeds[token];
     }
 }
