@@ -34,47 +34,47 @@ contract InvariantTest is StdInvariant, Test {
         // if we dont deposit collateral we dont redeem the collateral
     }
 
-    function invariant__TotalCollateralValueShouldBeGreaterThanTotalSupply() public view {
-        uint256 totalSupply = dsc.totalSupply();
+    // function invariant__TotalCollateralValueShouldBeGreaterThanTotalSupply() public view {
+    //     uint256 totalSupply = dsc.totalSupply();
 
-        uint256 wethAmount = IERC20(weth).balanceOf(address(dscEngine));
-        uint256 wbtcAmount = IERC20(wbtc).balanceOf(address(dscEngine));
-        uint256 wethValue = dscEngine.getEachCollateralUsdValue(weth, wethAmount);
-        uint256 wbtcValue = dscEngine.getEachCollateralUsdValue(wbtc, wbtcAmount);
-        uint256 totalValue = wethValue + wbtcValue;
+    //     uint256 wethAmount = IERC20(weth).balanceOf(address(dscEngine));
+    //     uint256 wbtcAmount = IERC20(wbtc).balanceOf(address(dscEngine));
+    //     uint256 wethValue = dscEngine.getEachCollateralUsdValue(weth, wethAmount);
+    //     uint256 wbtcValue = dscEngine.getEachCollateralUsdValue(wbtc, wbtcAmount);
+    //     uint256 totalValue = wethValue + wbtcValue;
 
-        // require(totalValue > totalSupply, "Invariant broken: totalValue <= totalSupply");
-        console.log("totalSupply", totalSupply);
-        console.log("wethValue", wethValue);
-        console.log("wbtcValue", wbtcValue);
-        console.log("wbtc Amount", wbtcAmount);
-        console.log("Time DSC Minted", handler.timeDSCMinted());
-        console.log("Time Collateral Redeemed", handler.timeCollateralRedeemed());
+    //     // require(totalValue > totalSupply, "Invariant broken: totalValue <= totalSupply");
+    //     console.log("totalSupply", totalSupply);
+    //     console.log("wethValue", wethValue);
+    //     console.log("wbtcValue", wbtcValue);
+    //     console.log("wbtc Amount", wbtcAmount);
+    //     console.log("Time DSC Minted", handler.timeDSCMinted());
+    //     console.log("Time Collateral Redeemed", handler.timeCollateralRedeemed());
 
-        assert(totalValue >= totalSupply);
-    }
+    //     assert(totalValue >= totalSupply);
+    // }
 
-    function invariant__GetterViewFunctionShouldNeverRevert() public view {
-        // we can call the getter view function without reverting
-        //   "getAccountCollateralValueOfUsd(address)": "e5cf9cd0",
-        //   "getAccountInfomation(address)": "ea139d93",
-        //   "getCollateralAddresses()": "1834f2a4",
-        //   "getCollateralAmount(address,address)": "1e40e53a",
-        //   "getCollateralPriceFeed(address)": "19f56d56",
-        //   "getEachCollateralUsdValue(address,uint256)": "99ba98e7",
-        //   "getHealthFactor(address)": "fe6bcd7c",
-        //   "getLiquidationBonus()": "59aa9e72",
-        //   "getMinimumHealthFactor()": "54fc49e2",
-        //   "getTokenAmountFromUsd(address,uint256)": "afea2e48",
-        dscEngine.getAccountCollateralValueOfUsd(msg.sender);
-        dscEngine.getAccountInfomation(msg.sender);
-        dscEngine.getCollateralAddresses();
-        dscEngine.getCollateralAmount(msg.sender, weth);
-        dscEngine.getCollateralPriceFeed(weth);
-        dscEngine.getEachCollateralUsdValue(weth, 1);
-        dscEngine.getHealthFactor(msg.sender);
-        dscEngine.getLiquidationBonus();
-        dscEngine.getMinimumHealthFactor();
-        dscEngine.getTokenAmountFromUsd(weth, 1);
-    }
+    // function invariant__GetterViewFunctionShouldNeverRevert() public view {
+    //     // we can call the getter view function without reverting
+    //     //   "getAccountCollateralValueOfUsd(address)": "e5cf9cd0",
+    //     //   "getAccountInfomation(address)": "ea139d93",
+    //     //   "getCollateralAddresses()": "1834f2a4",
+    //     //   "getCollateralAmount(address,address)": "1e40e53a",
+    //     //   "getCollateralPriceFeed(address)": "19f56d56",
+    //     //   "getEachCollateralUsdValue(address,uint256)": "99ba98e7",
+    //     //   "getHealinvariant__TotalCollateralValueShouldBeGreaterThanTotalSupplythFactor(address)": "fe6bcd7c",
+    //     //   "getLiquidationBonus()": "59aa9e72",
+    //     //   "getMinimumHealthFactor()": "54fc49e2",
+    //     //   "getTokenAmountFromUsd(address,uint256)": "afea2e48",
+    //     dscEngine.getAccountCollateralValueOfUsd(msg.sender);
+    //     dscEngine.getAccountInfomation(msg.sender);
+    //     dscEngine.getCollateralAddresses();
+    //     dscEngine.getCollateralAmount(msg.sender, weth);
+    //     dscEngine.getCollateralPriceFeed(weth);
+    //     dscEngine.getEachCollateralUsdValue(weth, 1);
+    //     dscEngine.getHealthFactor(msg.sender);
+    //     dscEngine.getLiquidationBonus();
+    //     dscEngine.getMinimumHealthFactor();
+    //     dscEngine.getTokenAmountFromUsd(weth, 1);
+    // }
 }

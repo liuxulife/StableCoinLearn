@@ -354,10 +354,10 @@ contract DSCEngineTest is Test {
         dscEngine.mintDSC(AMOUNT_MINT * 2);
         vm.stopPrank();
     }
+
     /**
      * @notice If copllateral price is going down, the health factor will be below 1
      */
-
     function testFactorCanBelowOne() public depositedCollateralAndMintDSC {
         int256 updateWethPrice = 200e8;
 

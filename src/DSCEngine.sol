@@ -29,6 +29,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {OracleLib} from "./libraries/OracleLib.sol";
 /**
  * @title DSCEngine
  * @author ThalesLiu (Learn from Patrick)
@@ -61,6 +62,11 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__HealthFactorIsOk();
     error DSCEnigne__HealthFactorIsNotImproved();
 
+    /////////////////////
+    // Types Variables //
+    /////////////////////
+    using OracleLib for AggregatorV3Interface;
+    
     /////////////////////
     // State Variables //
     /////////////////////
@@ -383,7 +389,7 @@ contract DSCEngine is ReentrancyGuard {
     function getTokenAmountFromUsd(address token, uint256 amountUsdInWei) public view returns (uint256) {
         // price of ETH (token) and its precision is 1e8
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[token]);
-        (, int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.staleCheckLatestRoundData();
 
         // We get the usdInwei (maybe is from the getusdValue function) and we need to adjust the price precision to 1e18 and we use amountUsdInWei divide the price and adjust result precision to 1e18
         // ($10e18 * 1e18) / ($2000e8 * 1e10) = 5e18 <--> 10e18 / (20000e8 * 1e10) * 1e18
@@ -417,7 +423,7 @@ contract DSCEngine is ReentrancyGuard {
      */
     function getEachCollateralUsdValue(address token, uint256 amount) public view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[token]);
-        (, int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.staleCheckLatestRoundData();
 
         // the price precision is 1e8 and the amount precision is 1e18 so we need to adjust the price precision to 1e18 and then we multiply the price and the amount and then divide the precision to get the usd value result (1e18)
         return (((uint256(price) * ADDITIONAL_FEED_PRECISION) * amount) / PRECISION);
